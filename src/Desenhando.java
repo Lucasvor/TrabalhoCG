@@ -1,17 +1,16 @@
+import javafx.geometry.Insets;
+import javafx.scene.control.RadioButton;
+import javafx.scene.layout.GridPane;
+import javafx.geometry.Pos;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import javax.swing.JButton;
-import javax.swing.JColorChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JToolBar;
+import java.io.BufferedReader;
+import javax.swing.*;
 
 // Esta é uma ferramenta gráfica de desenho básica no qual se podem criar figuras simples.
 
@@ -39,6 +38,9 @@ class JanelaComandos extends JFrame{
     private JButton Circulo = new JButton("Circulo");
     private JButton Reta = new JButton("Reta");
     private JButton Editar_Cor = new JButton("Editar Cor");
+    private JButton LimpaTela = new JButton("Limpa Tela");
+    private JPanel panel = new JPanel(new BorderLayout());
+
 
 
     private Gerador_Desenho Panel_Desenho = new Gerador_Desenho();
@@ -48,30 +50,50 @@ class JanelaComandos extends JFrame{
 
 
     private JLabel Status = new JLabel("  Forma ativa: Retângulo");
+    private JLabel Posicao = new JLabel("Posição:      ");
 
+    private JRadioButton Bresenham = new JRadioButton("Bresenham",true);
+    private JRadioButton DDA = new JRadioButton("DDA");
+    private ButtonGroup bg = new ButtonGroup();
 
 
     public JanelaComandos() {
         super("Desenvolvedor Gráfico");
+
+
+        bg.add(Bresenham);
+        bg.add(DDA);
+
+
+        panel.setBorder(BorderFactory.createEmptyBorder(0,10,0,10));
+        panel.add(Status,BorderLayout.WEST);
+        panel.add(Posicao,BorderLayout.EAST);
+        Panel_Desenho.getPanel(Posicao);
 
         // Adicionando os componentes
         Barra_De_Ferramenta.add(Retangulo);
         Barra_De_Ferramenta.add(Circulo);
         Barra_De_Ferramenta.add(Reta);
         Barra_De_Ferramenta.add(Editar_Cor);
+        Barra_De_Ferramenta.add(LimpaTela);
+        Barra_De_Ferramenta.add(Bresenham);
+        Barra_De_Ferramenta.add(DDA);
+
 
         // Cor de fundo da Barra de Status
         Status.setBackground(Color.WHITE);
 
         add(Barra_De_Ferramenta, BorderLayout.NORTH);
         add(Panel_Desenho, BorderLayout.CENTER);
-        add(Status, BorderLayout.SOUTH);
+        add(panel, BorderLayout.SOUTH);
+       // add(Posicao, BorderLayout.SOUTH);
 
         Eventos_Desenhando Eventos = new Eventos_Desenhando();
         Retangulo.addActionListener(Eventos);
         Circulo.addActionListener(Eventos);
         Reta.addActionListener(Eventos);
         Editar_Cor.addActionListener(Eventos);
+        LimpaTela.addActionListener(Eventos);
 
     }
 
@@ -83,6 +105,7 @@ class JanelaComandos extends JFrame{
          se seu valor for 0 será desenhado um Retângulo, caso for 1
          um Círculo, 2 será uma reta*/
         int Forma = 0;
+
 
         public void actionPerformed(ActionEvent event) {
 
@@ -104,6 +127,9 @@ class JanelaComandos extends JFrame{
                 Status.setText("  Forma ativa: Reta");
                 repaint();
             }
+            if (event.getSource() == LimpaTela) {
+                Panel_Desenho.setBuffered_da_Imagem();
+            }
 
             // Criando uma Caixa de Cor para mudar a cor da linha
             if (event.getSource() == Editar_Cor){
@@ -115,6 +141,7 @@ class JanelaComandos extends JFrame{
             }
             // Enviando a Forma a ser desenhada e a cor da linha
             Panel_Desenho.setForma( Forma, Ultima_Cor );
+            repaint();
 
         }
     }
@@ -128,6 +155,8 @@ class Gerador_Desenho extends JPanel implements MouseListener, MouseMotionListen
 
     // Criando local onde ficará armazenadas as imagens.
 
+
+
     private BufferedImage Buffered_da_Imagem = new BufferedImage((int)Dimensao.getWidth(),
             (int)Dimensao.getHeight(), BufferedImage.TYPE_INT_RGB);
 
@@ -138,6 +167,7 @@ class Gerador_Desenho extends JPanel implements MouseListener, MouseMotionListen
     private Color Ultima_Cor;
     private int x;
     private int y;
+    private JLabel label;
 
 
     public Gerador_Desenho(){
@@ -159,7 +189,17 @@ class Gerador_Desenho extends JPanel implements MouseListener, MouseMotionListen
         this.addMouseMotionListener(this);
     }
 
+    public void setBuffered_da_Imagem() {
+        Graphics g_Imagem = Buffered_da_Imagem.createGraphics();
+        g_Imagem.setColor(Color.WHITE);
+        g_Imagem.fillRect(0, 0, Buffered_da_Imagem.getWidth(), Buffered_da_Imagem.getHeight());
+        g_Imagem.dispose();
 
+        Graphics g_Reta = Buffered_da_Reta.createGraphics();
+        g_Reta.setColor(Color.WHITE);
+        g_Reta.fillRect(0, 0, Buffered_da_Reta.getWidth(), Buffered_da_Reta.getHeight());
+        g_Reta.dispose();
+    }
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -295,6 +335,7 @@ class Gerador_Desenho extends JPanel implements MouseListener, MouseMotionListen
         // Chamando o método Forma
         Forma(e.getX(), e.getY());
 
+
         repaint();
     }
 
@@ -307,6 +348,7 @@ class Gerador_Desenho extends JPanel implements MouseListener, MouseMotionListen
         g_Imagem.drawImage(Buffered_da_Reta, 0, 0, null);
         g_Imagem.dispose();
 
+
         repaint();
     }
 
@@ -314,8 +356,8 @@ class Gerador_Desenho extends JPanel implements MouseListener, MouseMotionListen
     public void mouseClicked(MouseEvent e) {
         x = e.getX();
         y = e.getY();
-
         Forma(e.getX(), e.getY());
+
 
         repaint(); // Atualiza a imagem do Jpanel
     }
@@ -332,14 +374,18 @@ class Gerador_Desenho extends JPanel implements MouseListener, MouseMotionListen
     public void mouseDragged(MouseEvent e) {
 
         Forma(e.getX(), e.getY());
-
+        label.setText("Posição: X: "+e.getX()+" Y:"+e.getY());
         repaint();
     }
 
 
     public void mouseMoved(MouseEvent e) {
+        label.setText("Posição: X: "+e.getX()+" Y:"+e.getY());
     }
 
+    public void getPanel(JLabel label){
+        this.label = label;
+    }
 
     public void Forma(int x, int y){
 
