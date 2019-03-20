@@ -94,6 +94,9 @@ class JanelaComandos extends JFrame{
         Reta.addActionListener(Eventos);
         Editar_Cor.addActionListener(Eventos);
         LimpaTela.addActionListener(Eventos);
+        Bresenham.addActionListener(Eventos);
+        DDA.addActionListener(Eventos);
+
 
     }
 
@@ -129,6 +132,12 @@ class JanelaComandos extends JFrame{
             }
             if (event.getSource() == LimpaTela) {
                 Panel_Desenho.setBuffered_da_Imagem();
+            }
+            if(event.getSource() == Bresenham){
+                Panel_Desenho.setTipo_Algoritmo(true);
+            }
+            if(event.getSource() == DDA){
+                Panel_Desenho.setTipo_Algoritmo(false);
             }
 
             // Criando uma Caixa de Cor para mudar a cor da linha
@@ -168,6 +177,16 @@ class Gerador_Desenho extends JPanel implements MouseListener, MouseMotionListen
     private int x;
     private int y;
     private JLabel label;
+
+    public boolean isTipo_Algoritmo() {
+        return tipo_Algoritmo;
+    }
+
+    public void setTipo_Algoritmo(boolean tipo_Algoritmo) {
+        this.tipo_Algoritmo = tipo_Algoritmo;
+    }
+
+    private boolean tipo_Algoritmo = true;
 
 
     public Gerador_Desenho(){
@@ -279,48 +298,63 @@ class Gerador_Desenho extends JPanel implements MouseListener, MouseMotionListen
         //g_Reta.drawLine(x, y, x2, y2);
 
         // delta of exact value and rounded value of the dependent variable
-        int d = 0;
+        if(isTipo_Algoritmo()) {
+            int d = 0;
 
-        int dx = Math.abs(x2 - x);
-        int dy = Math.abs(y2 - y);
-
-        int dx2 = 2 * dx; // slope scaling factors to
-        int dy2 = 2 * dy; // avoid floating point
-
-        int ix = x < x2 ? 1 : -1; // increment direction
-        int iy = y < y2 ? 1 : -1;
-
-        int xa = x;
-        int ya = y;
-
-        if (dx >= dy) {
-            while (true) {
-                g_Reta.drawOval(xa,ya,2,2);
-                if (xa == x2)
-                    break;
-                xa += ix;
-                d += dy2;
-                if (d > dx) {
-                    ya += iy;
-                    d -= dx2;
-                }
-            }
-        } else {
-            while (true) {
-                g_Reta.drawOval(xa,ya,2,2);
-                if (ya == y2)
-                    break;
-                ya += iy;
-                d += dx2;
-                if (d > dy) {
+            int dx = Math.abs(x2 - x);
+            int dy = Math.abs(y2 - y);
+            int dx2 = 2 * dx; // slope scaling factors to
+            int dy2 = 2 * dy; // avoid floating point
+            int ix = x < x2 ? 1 : -1; // increment direction
+            int iy = y < y2 ? 1 : -1;
+            int xa = x;
+            int ya = y;
+            if (dx >= dy) {
+                while (true) {
+                    g_Reta.drawOval(xa, ya, 2, 2);
+                    if (xa == x2)
+                        break;
                     xa += ix;
-                    d -= dy2;
+                    d += dy2;
+                    if (d > dx) {
+                        ya += iy;
+                        d -= dx2;
+                    }
                 }
+            } else {
+                while (true) {
+                    g_Reta.drawOval(xa, ya, 2, 2);
+                    if (ya == y2)
+                        break;
+                    ya += iy;
+                    d += dx2;
+                    if (d > dy) {
+                        xa += ix;
+                        d -= dy2;
+                    }
+                }
+
+                // Atualizando a tela
+                g_Reta.dispose();
+            }
+        }else{
+            int dx = x2 - x;
+            int dy = y2 - y;
+
+            int steps = Math.abs(dx) > Math.abs(dy) ? Math.abs(dx) : Math.abs(dy);
+
+            float Xinc = dx/ (float)steps;
+            float Yinc = dy / (float)steps;
+
+            float Xa = x;
+            float Ya = y;
+            for(int i = 0; i<= steps;i++){
+                g_Reta.drawOval((int)Xa, (int)Ya, 2, 2);
+                Xa += Xinc;
+                Ya += Yinc;
             }
 
-        // Atualizando a tela
-        g_Reta.dispose();
-    }
+        }
 }
 
 
