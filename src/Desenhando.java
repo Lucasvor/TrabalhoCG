@@ -246,17 +246,60 @@ class Gerador_Desenho extends JPanel implements MouseListener, MouseMotionListen
         g_retangulo.setColor(Ultima_Cor);
 
         g_retangulo.setStroke(new BasicStroke(2.0f));
+       
+        int d = 0;
 
-        if (x2>x && y2>y)
-            g_retangulo.drawRect(x,y,x2-x,y2-y);
-        if (x2>x && y>y2)
-            g_retangulo.drawRect(x,y2,x2-x,y-y2);
-        if (x>x2 && y>y2)
-            g_retangulo.drawRect(x2,y2,x-x2,y-y2);
-        if (x>x2 && y2>y)
-            g_retangulo.drawRect(x2,y,x-x2,y2-y);
+        int dx = Math.abs(x2 - x);
+        int dy = Math.abs(y2 - y);
+        int dx2 = 2 * dx; // slope scaling factors to
+        int dy2 = 2 * dy; // avoid floating point
+        int ix = x < x2 ? 1 : -1; // increment direction
+        int iy = y < y2 ? 1 : -1;
+        int xa = x;
+        int ya = y;
+        if (dx >= dy) {
+            if (x2>x && y2>y)
+                g_retangulo.drawRect(x,y,x2-x,y2-y);
+            if (x2>x && y>y2)
+                g_retangulo.drawRect(x,y2,x2-x,y-y2);
+            if (x>x2 && y>y2)
+                g_retangulo.drawRect(x2,y2,x-x2,y-y2);
+            if (x>x2 && y2>y)
+                g_retangulo.drawRect(x2,y,x-x2,y2-y);
+            while (true) {
+                if (xa == x2)
+                    break;
+                xa += ix;
+                d += dy2;
+                if (d > dx) {
+                    ya += iy;
+                    d -= dx2;
+                }
+            }
+            } else {
+            if (x2>x && y2>y)
+                g_retangulo.drawRect(x,y,x2-x,y2-y);
+            if (x2>x && y>y2)
+                g_retangulo.drawRect(x,y2,x2-x,y-y2);
+            if (x>x2 && y>y2)
+                g_retangulo.drawRect(x2,y2,x-x2,y-y2);
+            if (x>x2 && y2>y)
+                g_retangulo.drawRect(x2,y,x-x2,y2-y);
+                while (true) {
+                    if (ya == y2)
+                        break;
+                    ya += iy;
+                    d += dx2;
+                    if (d > dy) {
+                        xa += ix;
+                        d -= dy2;
+                    }
+                }
 
-        g_retangulo.dispose();
+                //Atualizando a tela
+            g_retangulo.dispose();
+        }
+
     }
 
 
@@ -269,7 +312,7 @@ class Gerador_Desenho extends JPanel implements MouseListener, MouseMotionListen
         g_Circulo.setColor(Ultima_Cor);
 
         g_Circulo.setStroke(new BasicStroke(2.0f));
-
+        
         if (x2>x && y2>y)
             g_Circulo.drawOval(x,y,x2-x,y2-y);
         if (x2>x && y>y2)
@@ -368,9 +411,8 @@ class Gerador_Desenho extends JPanel implements MouseListener, MouseMotionListen
 
         // Chamando o método Forma
         Forma(e.getX(), e.getY());
-
-
         repaint();
+
     }
 
 
@@ -389,11 +431,12 @@ class Gerador_Desenho extends JPanel implements MouseListener, MouseMotionListen
 
     public void mouseClicked(MouseEvent e) {
         x = e.getX();
+        
+        if(e.getY() == y){ // faz com que o desenho só apareça depois que arrastar ao ponto Y
         y = e.getY();
         Forma(e.getX(), e.getY());
-
-
         repaint(); // Atualiza a imagem do Jpanel
+        }
     }
 
 
@@ -406,7 +449,6 @@ class Gerador_Desenho extends JPanel implements MouseListener, MouseMotionListen
 
 
     public void mouseDragged(MouseEvent e) {
-
         Forma(e.getX(), e.getY());
         label.setText("Posição: X: "+e.getX()+" Y:"+e.getY());
         repaint();
