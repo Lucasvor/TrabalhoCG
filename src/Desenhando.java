@@ -219,82 +219,82 @@ class Gerador_Desenho extends JPanel implements MouseListener, MouseMotionListen
         g_retangulo.setColor(Ultima_Cor);
         g_retangulo.setStroke(new BasicStroke(2.0f));
         
-        if(isTipo_Algoritmo()) {
+        
         //Bresenham
-        int d = 0;
-        int dx = Math.abs(x2 - x);
-        int dy = Math.abs(y2 - y);
-        int dx2 = 2 * dx; // slope scaling factors to
-        int dy2 = 2 * dy; // avoid floating point
-        int ix = x < x2 ? 1 : -1; // increment direction
-        int iy = y < y2 ? 1 : -1;
-        int xa = x;
-        int ya = y;
-        if (dx >= dy) {
-            if (x2>x && y2>y)
-                g_retangulo.drawRect(x,y,x2-x,y2-y);
-            if (x2>x && y>y2)
-                g_retangulo.drawRect(x,y2,x2-x,y-y2);
-            if (x>x2 && y>y2)
-                g_retangulo.drawRect(x2,y2,x-x2,y-y2);
-            if (x>x2 && y2>y)
-                g_retangulo.drawRect(x2,y,x-x2,y2-y);
-            while (true) {
-                if (xa == x2)
-                    break;
-                xa += ix;
-                d += dy2;
-                if (d > dx) {
-                    ya += iy;
-                    d -= dx2;
-                }
+        int a, xi, yi;
+        int dx, dy, dx2, dy2, dxdy2, p, end;
+
+        for(a=1;a<5;a++){
+            if(a==1){
+                x=100;
+                y=100;
+                x2=400;
+                y2=100;
             }
-            } else {
-            if (x2>x && y2>y)
-                g_retangulo.drawRect(x,y,x2-x,y2-y);
-            if (x2>x && y>y2)
-                g_retangulo.drawRect(x,y2,x2-x,y-y2);
-            if (x>x2 && y>y2)
-                g_retangulo.drawRect(x2,y2,x-x2,y-y2);
-            if (x>x2 && y2>y)
-                g_retangulo.drawRect(x2,y,x-x2,y2-y);
-                while (true) {
-                    if (ya == y2)
-                        break;
-                    ya += iy;
-                    d += dx2;
-                    if (d > dy) {
-                        xa += ix;
-                        d -= dy2;
-                    }
-                }
-            g_retangulo.dispose();
+            if(a==2){
+                x=100;
+                y=100;
+                x2=100;
+                y2=300;
+            }
+            if(a==3){
+                x=100;
+                y=300;
+                x2=400;
+                y2=300;
+            }
+            if(a==4){
+                x=400;
+                y=100;
+                x2=400;
+                y2=300;
+            }
+            if(x==x2){
+                xi=x;
+                yi=y;
+
+        while(yi!=y2){
+            if((y2-y)>0)
+                ++yi;
+            else
+                --yi;
+        g_retangulo.drawOval(xi,yi,2,2);
         }
+        if(y>=y2){
+            xi=x2;
+            yi=y2;
+            end=y2;
+        }
+    }
+    if(x<x2){
+        xi=x;
+        yi=y;
+        end=x2;
     }else{
-            //DDA
-            int dx = x2 - x;
-            int dy = y2 - y;
-            int steps = Math.abs(dx) > Math.abs(dy) ? Math.abs(dx) : Math.abs(dy);
-            float Xinc = dx/ (float)steps;
-            float Yinc = dy / (float)steps;
-            float Xa = x;
-            float Ya = y;
-            
-            for(int i = 0; i<= steps;i++){
-                if (x2>Xa && y2>Ya)
-                    g_retangulo.drawRect((int)Xa,(int)Ya,x2-(int)Xa,y2-(int)Ya);
-                if (x2>Xa && Ya>y2)
-                    g_retangulo.drawRect((int)Xa,y2,x2-(int)Xa,(int)Ya-y2);
-                if (Xa>x2 && Ya>y2)
-                    g_retangulo.drawRect(x2,y2,(int)Xa-x2,(int)Ya-y2);
-                if (Xa>x2 && y2>Ya)
-                    g_retangulo.drawRect(x2,(int)Ya,(int)Xa-x2,y2-(int)Ya);
-                Xa += Xinc;
-                Ya += Yinc;
-                
-                g_retangulo.dispose();             
-            }
+        xi=x2;
+        yi=y2;
+        end=x;
+    }
+
+    dx=Math.abs(x2-x);
+    dy=Math.abs(y2-y);
+    dy2=2*dy;
+    dxdy2=2*(dy-dx);
+    p=2*dy-dx;
+    while(xi<end){
+        if(p<0){
+            xi++;
+            p+=dy2;
+        }else{
+            xi++;
+            yi++;
+            p=dxdy2;
         }
+        g_retangulo.drawOval(xi,yi,2,2);
+    } 
+}    
+        
+    
     }
 
     public void paint_Circulo(int x2, int y2){
