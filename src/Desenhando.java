@@ -32,7 +32,7 @@ class JanelaComandos extends JFrame{
     // Barra de Ferramenta com os botões necessários
     private JToolBar Barra_De_Ferramenta = new JToolBar();
     private JButton Retangulo = new JButton("Retângulo");
-    private JButton Circulo = new JButton("Circulo");
+    private JButton Triangulo = new JButton("Triângulo");
     private JButton Reta = new JButton("Reta");
     private JButton Editar_Cor = new JButton("Editar Cor");
     private JButton LimpaTela = new JButton("Limpa Tela");
@@ -62,7 +62,7 @@ class JanelaComandos extends JFrame{
 
         // Adicionando os componentes
         Barra_De_Ferramenta.add(Retangulo);
-        Barra_De_Ferramenta.add(Circulo);
+        Barra_De_Ferramenta.add(Triangulo);
         Barra_De_Ferramenta.add(Reta);
         Barra_De_Ferramenta.add(Editar_Cor);
         Barra_De_Ferramenta.add(LimpaTela);
@@ -79,7 +79,7 @@ class JanelaComandos extends JFrame{
 
         Eventos_Desenhando Eventos = new Eventos_Desenhando();
         Retangulo.addActionListener(Eventos);
-        Circulo.addActionListener(Eventos);
+        Triangulo.addActionListener(Eventos);
         Reta.addActionListener(Eventos);
         Editar_Cor.addActionListener(Eventos);
         LimpaTela.addActionListener(Eventos);
@@ -102,7 +102,7 @@ class JanelaComandos extends JFrame{
                 repaint();
             }
 
-            if (event.getSource() == Circulo){
+            if (event.getSource() == Triangulo){
                 Forma=1;
                 Status.setText("  Forma ativa: Circulo");
                 repaint();
@@ -218,103 +218,149 @@ class Gerador_Desenho extends JPanel implements MouseListener, MouseMotionListen
         g_retangulo.drawImage(Buffered_da_Imagem, 0, 0, null);
         g_retangulo.setColor(Ultima_Cor);
         g_retangulo.setStroke(new BasicStroke(2.0f));
-        
-        
-        //Bresenham
+
         int a, xi, yi;
-        int dx, dy, dx2, dy2, dxdy2, p, end;
+        int dx,dy, dx2, dy2, dxdy2, p, end;
 
-        for(a=1;a<5;a++){
-            if(a==1){
-                x=100;
-                y=100;
-                x2=400;
-                y2=100;
-            }
-            if(a==2){
-                x=100;
-                y=100;
-                x2=100;
-                y2=300;
-            }
-            if(a==3){
-                x=100;
-                y=300;
-                x2=400;
-                y2=300;
-            }
-            if(a==4){
-                x=400;
-                y=100;
-                x2=400;
-                y2=300;
-            }
-            if(x==x2){
-                xi=x;
-                yi=y;
+        if(isTipo_Algoritmo()) {
+            //Bresenham
+            for(a=1;a<5;a++){
+                if(a==1){ //horizontal superior
+                    x=100; 
+                    y=100;
+                    x2=400;
+                    y2=100;
+                }
+                if(a==2){ //vertical esquerda
+                    x=100;
+                    y=100;
+                    x2=100;
+                    y2=300;
+                }
+                if(a==3){ //horinzontal inferior
+                    x=100;
+                    y=300;
+                    x2=400;
+                    y2=300;
+                }
+                if(a==4){ //vertical direita
+                    x=400;
+                    y=100;
+                    x2=400;
+                    y2=300;
+                }
+                if(x==x2){
+                    xi=x;
+                    yi=y;
+                    while(yi!=y2){
+                        if((y2-y)>0)
+                            ++yi;
+                        else
+                            --yi;
+                            g_retangulo.drawOval(xi,yi,2,2); //rasters verticais esquerda e direita
+                        }
+                        if(y>=y2){
+                            xi=x2;
+                            yi=y2;
+                            end=y2;
+                        }
+                    }
+                    if(x<x2){
+                        xi=x;
+                        yi=y;
+                        end=x2;
+                    }else{
+                        xi=x2;
+                        yi=y2;
+                        end=x;
+                    }
 
-        while(yi!=y2){
-            if((y2-y)>0)
-                ++yi;
-            else
-                --yi;
-        g_retangulo.drawOval(xi,yi,2,2);
-        }
-        if(y>=y2){
-            xi=x2;
-            yi=y2;
-            end=y2;
-        }
-    }
-    if(x<x2){
-        xi=x;
-        yi=y;
-        end=x2;
-    }else{
-        xi=x2;
-        yi=y2;
-        end=x;
-    }
-
-    dx=Math.abs(x2-x);
-    dy=Math.abs(y2-y);
-    dy2=2*dy;
-    dxdy2=2*(dy-dx);
-    p=2*dy-dx;
-    while(xi<end){
-        if(p<0){
-            xi++;
-            p+=dy2;
+                dx=Math.abs(x2-x);
+                dy=Math.abs(y2-y);
+                dy2=2*dy;
+                dxdy2=2*(dy-dx);
+                p=2*dy-dx;
+                while(xi<end){
+                    g_retangulo.drawOval(xi,yi,2,2); // rasters horizontais inferior e superior
+                    if(p<0){
+                        xi++;
+                        p+=dy2;
+                    }else{
+                        xi++;
+                        yi++;
+                        p=dxdy2;
+                    }
+                }
+            }
         }else{
-            xi++;
-            yi++;
-            p=dxdy2;
-        }
-        g_retangulo.drawOval(xi,yi,2,2);
-    } 
-}    
-        
-    
+            //dda
+            for(a=1;a<5;a++){
+                if(a==1){ //horizontal superior
+                    x=150; //100
+                    y=150; //100
+                    x2=450; //400   
+                    y2=150; //100
+                }
+                if(a==2){ //vertical esquerda
+                    x=150; //100
+                    y=150; //100
+                    x2=150; //100
+                    y2=350; //300
+                }
+                if(a==3){ //horinzontal inferior
+                    x=150; //100
+                    y=350; //300
+                    x2=450; //400
+                    y2=350; //300
+                }
+                if(a==4){ //vertical direita
+                    x=450; //400 
+                    y=150; //100
+                    x2=450; //400
+                    y2=350; //300
+                }   
+                dx = Math.abs(x2 - x);
+                dy = Math.abs(y2 - y);
+                int length;
+                if (Math.abs(dx) >= Math.abs(dy)){
+                    length=Math.abs(dx);
+                }else{
+                    length=Math.abs(dy);
+                }
+                float Xinc = dx / (float)length;
+                float Yinc = dy / (float)length;
+
+                float Xa = x;
+                float Ya = y;
+                int i = 1;
+                while(i<=length){
+                    g_retangulo.drawOval((int)Xa, (int)Ya,2,2);
+                    Xa += Xinc;
+                    Ya += Yinc;
+                    i++;
+                }
+            }
+        }    
     }
 
-    public void paint_Circulo(int x2, int y2){
+    public void paint_Triangulo(int x2, int y2){
 
-        Graphics2D g_Circulo = Buffered_da_Reta.createGraphics();
-        g_Circulo.drawImage(Buffered_da_Imagem, 0, 0, null);
-        g_Circulo.setColor(Ultima_Cor);
+        Graphics2D g_Triangulo = Buffered_da_Reta.createGraphics();
+        g_Triangulo.drawImage(Buffered_da_Imagem, 0, 0, null);
+        g_Triangulo.setColor(Ultima_Cor);
 
-        g_Circulo.setStroke(new BasicStroke(2.0f));
+        g_Triangulo.setStroke(new BasicStroke(2.0f));
         
         if (x2>x && y2>y)
-            g_Circulo.drawOval(x,y,x2-x,y2-y);
+            g_Triangulo.drawOval(x,y,x2-x,y2-y);
         if (x2>x && y>y2)
-            g_Circulo.drawOval(x,y2,x2-x,y-y2);
+            g_Triangulo.drawOval(x,y2,x2-x,y-y2);
         if (x>x2 && y>y2)
-            g_Circulo.drawOval(x2,y2,x-x2,y-y2);
+            g_Triangulo.drawOval(x2,y2,x-x2,y-y2);
         if (x>x2 && y2>y)
-            g_Circulo.drawOval(x2,y,x-x2,y2-y);
+            g_Triangulo.drawOval(x2,y,x-x2,y2-y);
 
-        g_Circulo.dispose();
+        g_Triangulo.dispose();
     }
 
     public void paint_Reta(int x2, int y2){
@@ -366,9 +412,6 @@ class Gerador_Desenho extends JPanel implements MouseListener, MouseMotionListen
                         d -= dy2;
                     }
                 }
-
-                // Atualizando a tela
-                g_Reta.dispose();
             }
         }else{
             int dx = x2 - x;
@@ -439,7 +482,7 @@ class Gerador_Desenho extends JPanel implements MouseListener, MouseMotionListen
         if (valor==0)
             paint_retangulo(x, y);
         if (valor==1)
-            paint_Circulo(x, y);
+            paint_Triangulo(x, y);
         if (valor==2)
             paint_Reta(x, y);
     }
