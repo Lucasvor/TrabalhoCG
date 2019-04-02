@@ -138,6 +138,10 @@ class JanelaComandos extends JFrame{
         }
     }
 }
+ class UltimosPontos{
+    int x;
+    int y;
+}
 
 class Gerador_Desenho extends JPanel implements MouseListener, MouseMotionListener{
 
@@ -212,6 +216,14 @@ class Gerador_Desenho extends JPanel implements MouseListener, MouseMotionListen
         Ultima_Cor = newCor;
     }
 
+    public void paint_teste(int x2,int y2){
+        Graphics2D g_retangulo = Buffered_da_Reta.createGraphics();
+        g_retangulo.drawImage(Buffered_da_Imagem, 0, 0, null);
+        g_retangulo.setColor(Ultima_Cor);
+        g_retangulo.setStroke(new BasicStroke(2.0f));
+
+
+    }
     public void paint_retangulo(int x2, int y2){
 
         Graphics2D g_retangulo = Buffered_da_Reta.createGraphics();
@@ -219,128 +231,146 @@ class Gerador_Desenho extends JPanel implements MouseListener, MouseMotionListen
         g_retangulo.setColor(Ultima_Cor);
         g_retangulo.setStroke(new BasicStroke(2.0f));
 
-        int a, xi, yi;
-        int dx,dy, dx2, dy2, dxdy2, p, end;
 
-        if(isTipo_Algoritmo()) {
-            //Bresenham
-            for(a=1;a<5;a++){
-                if(a==1){ //horizontal superior
-                    x=100; 
-                    y=100;
-                    x2=400;
-                    y2=100;
-                }
-                if(a==2){ //vertical esquerda
-                    x=100;
-                    y=100;
-                    x2=100;
-                    y2=300;
-                }
-                if(a==3){ //horinzontal inferior
-                    x=100;
-                    y=300;
-                    x2=400;
-                    y2=300;
-                }
-                if(a==4){ //vertical direita
-                    x=400;
-                    y=100;
-                    x2=400;
-                    y2=300;
-                }
-                if(x==x2){
-                    xi=x;
-                    yi=y;
-                    while(yi!=y2){
-                        if((y2-y)>0)
-                            ++yi;
-                        else
-                            --yi;
-                            g_retangulo.drawOval(xi,yi,2,2); //rasters verticais esquerda e direita
-                        }
-                        if(y>=y2){
-                            xi=x2;
-                            yi=y2;
-                            end=y2;
-                        }
-                    }
-                    if(x<x2){
-                        xi=x;
-                        yi=y;
-                        end=x2;
-                    }else{
-                        xi=x2;
-                        yi=y2;
-                        end=x;
-                    }
+        ultimaLinhaDoTriangulo(x,y,x,y2,g_retangulo);
+        ultimaLinhaDoTriangulo(x,y2,x2,y2,g_retangulo);
+        ultimaLinhaDoTriangulo(x2,y2,x2,y,g_retangulo);
+        ultimaLinhaDoTriangulo(x2,y,x,y,g_retangulo);
 
-                dx=Math.abs(x2-x);
-                dy=Math.abs(y2-y);
-                dy2=2*dy;
-                dxdy2=2*(dy-dx);
-                p=2*dy-dx;
-                while(xi<end){
-                    g_retangulo.drawOval(xi,yi,2,2); // rasters horizontais inferior e superior
-                    if(p<0){
-                        xi++;
-                        p+=dy2;
-                    }else{
-                        xi++;
-                        yi++;
-                        p=dxdy2;
-                    }
-                }
-            }
-        }else{
-            //dda
-            for(a=1;a<5;a++){
-                if(a==1){ //horizontal superior
-                    x=150; //100
-                    y=150; //100
-                    x2=450; //400   
-                    y2=150; //100
-                }
-                if(a==2){ //vertical esquerda
-                    x=150; //100
-                    y=150; //100
-                    x2=150; //100
-                    y2=350; //300
-                }
-                if(a==3){ //horinzontal inferior
-                    x=150; //100
-                    y=350; //300
-                    x2=450; //400
-                    y2=350; //300
-                }
-                if(a==4){ //vertical direita
-                    x=450; //400 
-                    y=150; //100
-                    x2=450; //400
-                    y2=350; //300
-                }   
-                dx = Math.abs(x2 - x);
-                dy = Math.abs(y2 - y);
-                int length;
-                if (Math.abs(dx) >= Math.abs(dy)){
-                    length=Math.abs(dx);
-                }else{
-                    length=Math.abs(dy);
-                }
-                float Xinc = dx / (float)length;
-                float Yinc = dy / (float)length;
 
-                float Xa = x;
-                float Ya = y;
-                int i = 1;
-                while(i<=length){
-                    g_retangulo.drawOval((int)Xa, (int)Ya,2,2);
-                    Xa += Xinc;
-                    Ya += Yinc;
-                    i++;
-                }
-            }
-        }    
+
+//        if (x2>x && y2>y)
+//            g_retangulo.drawRect(x,y,x2-x,y2-y);
+//        if (x2>x && y>y2)
+//            g_retangulo.drawRect(x,y2,x2-x,y-y2);
+//        if (x>x2 && y>y2)
+//            g_retangulo.drawRect(x2,y2,x-x2,y-y2);
+//        if (x>x2 && y2>y)
+//            g_retangulo.drawRect(x2,y,x-x2,y2-y);
+
+//        int a, xi, yi;
+//        int dx,dy, dx2, dy2, dxdy2, p, end;
+//
+//        if(isTipo_Algoritmo()) {
+//            //Bresenham
+//            for(a=1;a<5;a++){
+//                if(a==1){ //horizontal superior
+//                    x=100;
+//                    y=100;
+//                    x2=400;
+//                    y2=100;
+//                }
+//                if(a==2){ //vertical esquerda
+//                    x=100;
+//                    y=100;
+//                    x2=100;
+//                    y2=300;
+//                }
+//                if(a==3){ //horinzontal inferior
+//                    x=100;
+//                    y=300;
+//                    x2=400;
+//                    y2=300;
+//                }
+//                if(a==4){ //vertical direita
+//                    x=400;
+//                    y=100;
+//                    x2=400;
+//                    y2=300;
+//                }
+//                if(x==x2){
+//                    xi=x;
+//                    yi=y;
+//                    while(yi!=y2){
+//                        if((y2-y)>0)
+//                            ++yi;
+//                        else
+//                            --yi;
+//                            g_retangulo.drawOval(xi,yi,2,2); //rasters verticais esquerda e direita
+//                        }
+//                        if(y>=y2){
+//                            xi=x2;
+//                            yi=y2;
+//                            end=y2;
+//                        }
+//                    }
+//                    if(x<x2){
+//                        xi=x;
+//                        yi=y;
+//                        end=x2;
+//                    }else{
+//                        xi=x2;
+//                        yi=y2;
+//                        end=x;
+//                    }
+//
+//                dx=Math.abs(x2-x);
+//                dy=Math.abs(y2-y);
+//                dy2=2*dy;
+//                dxdy2=2*(dy-dx);
+//                p=2*dy-dx;
+//                while(xi<end){
+//                    g_retangulo.drawOval(xi,yi,2,2); // rasters horizontais inferior e superior
+//                    if(p<0){
+//                        xi++;
+//                        p+=dy2;
+//                    }else{
+//                        xi++;
+//                        yi++;
+//                        p=dxdy2;
+//                    }
+//                }
+//            }
+//        }else{
+//            //dda
+//            for(a=1;a<5;a++){
+//                if(a==1){ //horizontal superior
+//                    x=150; //100
+//                    y=150; //100
+//                    x2=450; //400
+//                    y2=150; //100
+//                }
+//                if(a==2){ //vertical esquerda
+//                    x=150; //100
+//                    y=150; //100
+//                    x2=150; //100
+//                    y2=350; //300
+//                }
+//                if(a==3){ //horinzontal inferior
+//                    x=150; //100
+//                    y=350; //300
+//                    x2=450; //400
+//                    y2=350; //300
+//                }
+//                if(a==4){ //vertical direita
+//                    x=450; //400
+//                    y=150; //100
+//                    x2=450; //400
+//                    y2=350; //300
+//                }
+//                dx = Math.abs(x2 - x);
+//                dy = Math.abs(y2 - y);
+//                int length;
+//                if (Math.abs(dx) >= Math.abs(dy)){
+//                    length=Math.abs(dx);
+//                }else{
+//                    length=Math.abs(dy);
+//                }
+//                float Xinc = dx / (float)length;
+//                float Yinc = dy / (float)length;
+//
+//                float Xa = x;
+//                float Ya = y;
+//                int i = 1;
+//                while(i<=length){
+//                    g_retangulo.drawOval((int)Xa, (int)Ya,2,2);
+//                    Xa += Xinc;
+//                    Ya += Yinc;
+//                    i++;
+//                }
+//            }
+//        }
+        g_retangulo.dispose();
     }
 
     public void paint_Triangulo(int x2, int y2){
@@ -350,33 +380,85 @@ class Gerador_Desenho extends JPanel implements MouseListener, MouseMotionListen
         g_Triangulo.setColor(Ultima_Cor);
 
         g_Triangulo.setStroke(new BasicStroke(2.0f));
-        
-        if (x2>x && y2>y)
-            g_Triangulo.drawOval(x,y,x2-x,y2-y);
-        if (x2>x && y>y2)
-            g_Triangulo.drawOval(x,y2,x2-x,y-y2);
-        if (x>x2 && y>y2)
-            g_Triangulo.drawOval(x2,y2,x-x2,y-y2);
-        if (x>x2 && y2>y)
-            g_Triangulo.drawOval(x2,y,x-x2,y2-y);
+        UltimosPontos up1 = new UltimosPontos();
+        UltimosPontos up2 = new UltimosPontos();
+
+        up1 = Algoritmos(x2-30,y2+30,g_Triangulo);
+        up2 = Algoritmos(x2+30,y2+30,g_Triangulo);
+       // g_Triangulo.drawLine(up1.x,up1.y,up2.x,up2.y);
+        ultimaLinhaDoTriangulo(up1.x,up1.y,up2.x,up2.y,g_Triangulo);
+        //Algoritmos(x2+60,y2+60,g_Triangulo);
+
+//        if (x2>x && y2>y)
+//            g_Triangulo.drawRect(x,y,x2-x,y2-y);
+//        if (x2>x && y>y2)
+//            g_Triangulo.drawRect(x,y2,x2-x,y-y2);
+//        if (x>x2 && y>y2)
+//            g_Triangulo.drawRect(x2,y2,x-x2,y-y2);
+//        if (x>x2 && y2>y)
+//            g_Triangulo.drawRect(x2,y,x-x2,y2-y);
 
         g_Triangulo.dispose();
     }
+    public void ultimaLinhaDoTriangulo(int a,int b,int x2,int y2,Graphics2D g_Reta){
+        if(isTipo_Algoritmo()) {
+            int d = 0;
 
-    public void paint_Reta(int x2, int y2){
+            int dx = Math.abs(x2 - a);
+            int dy = Math.abs(y2 - b);
+            int dx2 = 2 * dx; // slope scaling factors to
+            int dy2 = 2 * dy; // avoid floating point
+            int ix = a < x2 ? 1 : -1; // increment direction
+            int iy = b < y2 ? 1 : -1;
+            int xa = a;
+            int ya = b;
+            if (dx >= dy) {
+                while (true) {
+                    g_Reta.drawOval(xa, ya, 2, 2);
+                    if (xa == x2)
+                        break;
+                    xa += ix;
+                    d += dy2;
+                    if (d > dx) {
+                        ya += iy;
+                        d -= dx2;
+                    }
+                }
+            } else {
+                while (true) {
+                    g_Reta.drawOval(xa, ya, 2, 2);
+                    if (ya == y2)
+                        break;
+                    ya += iy;
+                    d += dx2;
+                    if (d > dy) {
+                        xa += ix;
+                        d -= dy2;
+                    }
+                }
+            }
+        }else{
+            int dx = x2 - a;
+            int dy = y2 - b;
 
-        Graphics2D g_Reta = Buffered_da_Reta.createGraphics();
-        g_Reta.drawImage(Buffered_da_Imagem, 0, 0, null);
-        // Definindo a Cor da linha
-        g_Reta.setColor(Ultima_Cor);
+            int steps = Math.abs(dx) > Math.abs(dy) ? Math.abs(dx) : Math.abs(dy);
 
-        // Definindo a espessura da linha
-       // g_Reta.setStroke(new BasicStroke(2.0f));
+            float Xinc = dx/ (float)steps;
+            float Yinc = dy / (float)steps;
 
-        // Desenhando a linha
-        //g_Reta.drawLine(x, y, x2, y2);
+            float Xa = a;
+            float Ya = b;
+            for(int i = 0; i<= steps;i++){
+                g_Reta.drawOval((int)Xa, (int)Ya, 2, 2);
+                Xa += Xinc;
+                Ya += Yinc;
+            }
+        }
 
-        // delta of exact value and rounded value of the dependent variable
+    }
+
+    public UltimosPontos Algoritmos(int x2,int y2,Graphics2D g_Reta){
+        UltimosPontos up = new UltimosPontos();
         if(isTipo_Algoritmo()) {
             int d = 0;
 
@@ -413,6 +495,9 @@ class Gerador_Desenho extends JPanel implements MouseListener, MouseMotionListen
                     }
                 }
             }
+
+            up.x = xa;
+            up.y = ya;
         }else{
             int dx = x2 - x;
             int dy = y2 - y;
@@ -429,7 +514,26 @@ class Gerador_Desenho extends JPanel implements MouseListener, MouseMotionListen
                 Xa += Xinc;
                 Ya += Yinc;
             }
+            up.x = (int)Xa;
+            up.y = (int)Ya;
+
         }
+        return up;
+    }
+    public void paint_Reta(int x2, int y2){
+
+        Graphics2D g_Reta = Buffered_da_Reta.createGraphics();
+        g_Reta.drawImage(Buffered_da_Imagem, 0, 0, null);
+        // Definindo a Cor da linha
+        g_Reta.setColor(Ultima_Cor);
+        Algoritmos(x2,y2,g_Reta);
+        // Definindo a espessura da linha
+       // g_Reta.setStroke(new BasicStroke(2.0f));
+
+        // Desenhando a linha
+        //g_Reta.drawLine(x, y, x2, y2);
+
+        // delta of exact value and rounded value of the dependent variable
     }
 
     // Capturando os Eventos com o mouse
