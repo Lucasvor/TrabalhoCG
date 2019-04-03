@@ -1,4 +1,4 @@
-import javafx.geometry.Insets;
+ import javafx.geometry.Insets;
 import javafx.scene.control.RadioButton;
 import javafx.scene.layout.GridPane;
 import javafx.geometry.Pos;
@@ -16,19 +16,15 @@ import javax.swing.*;
 public class Desenhando{
 
     public static void main(String args[]){
-
         JanelaComandos JanelaComandos = new JanelaComandos();
-
         JanelaComandos.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JanelaComandos.setSize(1000,500);
         JanelaComandos.setVisible(true);
         JanelaComandos.setLocationRelativeTo(null);
-
     }
 }
 
 class JanelaComandos extends JFrame{
-
     // Barra de Ferramenta com os botões necessários
     private JToolBar Barra_De_Ferramenta = new JToolBar();
     private JButton Retangulo = new JButton("Retângulo");
@@ -36,6 +32,11 @@ class JanelaComandos extends JFrame{
     private JButton Reta = new JButton("Reta");
     private JButton Editar_Cor = new JButton("Editar Cor");
     private JButton LimpaTela = new JButton("Limpa Tela");
+    private JLabel xlb = new JLabel("X:");
+    private JLabel ylb = new JLabel("Y:");
+    private JTextField x_txtf = new JTextField();
+    private JTextField y_txtf = new JTextField();
+    
     private JPanel panel = new JPanel(new BorderLayout());
 
     private Gerador_Desenho Panel_Desenho = new Gerador_Desenho();
@@ -43,7 +44,7 @@ class JanelaComandos extends JFrame{
     private Color Cor_da_Figura = Color.RED;
     private Color Ultima_Cor = Color.RED;
 
-    private JLabel Status = new JLabel("  Forma ativa: Retângulo");
+    private JLabel Status = new JLabel("Forma ativa: Retângulo");
     private JLabel Posicao = new JLabel("Posição:      ");
 
     private JRadioButton Bresenham = new JRadioButton("Bresenham",true);
@@ -68,6 +69,10 @@ class JanelaComandos extends JFrame{
         Barra_De_Ferramenta.add(LimpaTela);
         Barra_De_Ferramenta.add(Bresenham);
         Barra_De_Ferramenta.add(DDA);
+        Barra_De_Ferramenta.add(xlb);
+        Barra_De_Ferramenta.add(x_txtf);
+        Barra_De_Ferramenta.add(ylb);
+        Barra_De_Ferramenta.add(y_txtf);
 
         // Cor de fundo da Barra de Status
         Status.setBackground(Color.WHITE);
@@ -95,6 +100,7 @@ class JanelaComandos extends JFrame{
         int Forma = 0;
 
         public void actionPerformed(ActionEvent event) {
+            
 
             if (event.getSource()== Retangulo){
                 Forma=0;
@@ -104,7 +110,7 @@ class JanelaComandos extends JFrame{
 
             if (event.getSource() == Triangulo){
                 Forma=1;
-                Status.setText("  Forma ativa: Circulo");
+                Status.setText("  Forma ativa: Triângulo");
                 repaint();
             }
 
@@ -113,6 +119,7 @@ class JanelaComandos extends JFrame{
                 Status.setText("  Forma ativa: Reta");
                 repaint();
             }
+            
             if (event.getSource() == LimpaTela) {
                 Panel_Desenho.setBuffered_da_Imagem();
             }
@@ -146,7 +153,6 @@ class JanelaComandos extends JFrame{
 class Gerador_Desenho extends JPanel implements MouseListener, MouseMotionListener{
 
     Dimension Dimensao = Toolkit.getDefaultToolkit().getScreenSize();
-
     // Criando local onde ficará armazenadas as imagens.
     private BufferedImage Buffered_da_Imagem = new BufferedImage((int)Dimensao.getWidth(),
             (int)Dimensao.getHeight(), BufferedImage.TYPE_INT_RGB);
@@ -159,6 +165,9 @@ class Gerador_Desenho extends JPanel implements MouseListener, MouseMotionListen
     private int x;
     private int y;
     private JLabel label;
+    private int x_txtf;
+    private int y_txtf;
+
 
     public boolean isTipo_Algoritmo() {
         return tipo_Algoritmo;
@@ -207,7 +216,6 @@ class Gerador_Desenho extends JPanel implements MouseListener, MouseMotionListen
         g.setColor(Color.WHITE);
         g.fillRect(0, 0, Buffered_da_Imagem.getWidth(), Buffered_da_Imagem.getHeight());
         g.drawImage(Buffered_da_Reta, 0, 0, null);
-
         g.dispose();
     }
 
@@ -221,23 +229,18 @@ class Gerador_Desenho extends JPanel implements MouseListener, MouseMotionListen
         g_retangulo.drawImage(Buffered_da_Imagem, 0, 0, null);
         g_retangulo.setColor(Ultima_Cor);
         g_retangulo.setStroke(new BasicStroke(2.0f));
-
-
     }
+    
     public void paint_retangulo(int x2, int y2){
-
         Graphics2D g_retangulo = Buffered_da_Reta.createGraphics();
         g_retangulo.drawImage(Buffered_da_Imagem, 0, 0, null);
         g_retangulo.setColor(Ultima_Cor);
         g_retangulo.setStroke(new BasicStroke(2.0f));
 
-
         ultimaLinhaDoTriangulo(x,y,x,y2,g_retangulo);
         ultimaLinhaDoTriangulo(x,y2,x2,y2,g_retangulo);
         ultimaLinhaDoTriangulo(x2,y2,x2,y,g_retangulo);
         ultimaLinhaDoTriangulo(x2,y,x,y,g_retangulo);
-
-
 
 //        if (x2>x && y2>y)
 //            g_retangulo.drawRect(x,y,x2-x,y2-y);
@@ -365,6 +368,7 @@ class Gerador_Desenho extends JPanel implements MouseListener, MouseMotionListen
 //                while(i<=length){
 //                    g_retangulo.drawOval((int)Xa, (int)Ya,2,2);
 //                    Xa += Xinc;
+        
 //                    Ya += Yinc;
 //                    i++;
 //                }
@@ -384,7 +388,7 @@ class Gerador_Desenho extends JPanel implements MouseListener, MouseMotionListen
         UltimosPontos up2 = new UltimosPontos();
 
         up1 = Algoritmos(x2-30,y2+30,g_Triangulo);
-        up2 = Algoritmos(x2+30,y2+30,g_Triangulo);
+        up2 = Algoritmos(x2+30,y2+30,g_Triangulo); 
        // g_Triangulo.drawLine(up1.x,up1.y,up2.x,up2.y);
         ultimaLinhaDoTriangulo(up1.x,up1.y,up2.x,up2.y,g_Triangulo);
         //Algoritmos(x2+60,y2+60,g_Triangulo);
@@ -403,7 +407,6 @@ class Gerador_Desenho extends JPanel implements MouseListener, MouseMotionListen
     public void ultimaLinhaDoTriangulo(int a,int b,int x2,int y2,Graphics2D g_Reta){
         if(isTipo_Algoritmo()) {
             int d = 0;
-
             int dx = Math.abs(x2 - a);
             int dy = Math.abs(y2 - b);
             int dx2 = 2 * dx; // slope scaling factors to
@@ -454,14 +457,12 @@ class Gerador_Desenho extends JPanel implements MouseListener, MouseMotionListen
                 Ya += Yinc;
             }
         }
-
     }
 
     public UltimosPontos Algoritmos(int x2,int y2,Graphics2D g_Reta){
         UltimosPontos up = new UltimosPontos();
         if(isTipo_Algoritmo()) {
             int d = 0;
-
             int dx = Math.abs(x2 - x);
             int dy = Math.abs(y2 - y);
             int dx2 = 2 * dx; // slope scaling factors to
@@ -516,7 +517,6 @@ class Gerador_Desenho extends JPanel implements MouseListener, MouseMotionListen
             }
             up.x = (int)Xa;
             up.y = (int)Ya;
-
         }
         return up;
     }
@@ -538,11 +538,12 @@ class Gerador_Desenho extends JPanel implements MouseListener, MouseMotionListen
 
     // Capturando os Eventos com o mouse
     public void mousePressed(MouseEvent e) {
-
-        // Obtendo as coordenadas do mouse
+        // Obtendo as coordenadas do mouse e TxtField
         x = e.getX();
         y = e.getY();
-
+        
+        x_txtf = e.getX();
+        y_txtf = e.getY();
         // Chamando o método Forma
         Forma(e.getX(), e.getY());
         repaint();      
@@ -550,7 +551,6 @@ class Gerador_Desenho extends JPanel implements MouseListener, MouseMotionListen
 
     public void mouseReleased(MouseEvent e) {
         Forma(e.getX(), e.getY());
-
         Graphics g_Imagem = Buffered_da_Imagem.createGraphics();
         g_Imagem.drawImage(Buffered_da_Reta, 0, 0, null);
         g_Imagem.dispose();
@@ -558,8 +558,13 @@ class Gerador_Desenho extends JPanel implements MouseListener, MouseMotionListen
     }
 
     public void mouseClicked(MouseEvent e) {
+        // Obtendo as coordenadas do mouse e TxtField
         x = e.getX();
         y = e.getY();
+        
+        x_txtf = e.getX();
+        y_txtf = e.getY();
+
         Forma(e.getX(), e.getY());
         repaint(); // Atualiza a imagem do Jpanel
     }
